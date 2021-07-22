@@ -75,6 +75,7 @@ class Signup extends ActorHook {
       var newActor = newAgent.hook(Signup()..agent = newAgent).actor;
 
       var res = await newActor.getFunc(SignupMethod.signup)!(argumnets);
+
       if (res != null) {
         // return (res as BigInt).toInt();
         return res;

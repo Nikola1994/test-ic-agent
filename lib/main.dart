@@ -1,4 +1,5 @@
 import 'package:agent_dart/agent/auth.dart';
+// import 'package:agent_dart/auth_client/auth_client.dart';
 import 'package:agent_dart/auth_client/webauth_provider.dart';
 import 'package:agent_dart_example/signup.dart';
 import 'package:flutter/material.dart';
@@ -57,7 +58,7 @@ class _MyAppState extends State<MyApp> {
         'education': "Education",
         'display_name': "Display name",
         'title': "Title",
-        'username': "usernametest",
+        'username': "usernametest2",
         'description': "Description ...",
         'link': "www.google.com",
         'location': "location",
@@ -81,7 +82,7 @@ class _MyAppState extends State<MyApp> {
           useLocalPage: true);
 
       await authClient.login(
-          // AuthClientLoginOptions()..canisterId = "rwlgt-iiaaa-aaaaa-aaaaa-cai"
+          // AuthClientLoginOptions()..canisterId = "a64ux-piaaa-aaaae-aaara-cai"
           );
       var loginResult = await authClient.isAuthenticated();
 

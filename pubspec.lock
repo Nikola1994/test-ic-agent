@@ -6,7 +6,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "53f6e0b7b8290f7789fd2577e9fe3c675102538e"
+      resolved-ref: "1284e1ad875c40a6ca84d03c3fcb5acdf23803ca"
       url: "https://github.com/AstroxNetwork/agent_dart"
     source: git
     version: "0.1.5"
