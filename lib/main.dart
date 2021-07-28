@@ -54,6 +54,16 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  void getLatestAnnouncements() async {
+    await initSignup();
+    print("Start");
+    dynamic c = await _signup.getLatestAnnouncements(_identity as SignIdentity, []);
+    print(c);
+    print("End");
+    loading(false);
+    setState(() {});
+  }
+
   void signup() async {
     await initSignup();
     List arguments = [
@@ -82,8 +92,8 @@ class _MyAppState extends State<MyApp> {
       var authClient = WebAuthProvider(
           scheme: "identity",
           path: 'auth',
-          authUri: Uri.parse('https://identity.ic0.app/#authorize'),
-          useLocalPage: true);
+          authUri: Uri.parse('PUT_STAGING_URI_HERE'),
+          useLocalPage: false);
 
       await authClient.login(AuthClientLoginOptions()..canisterId = "a64ux-piaaa-aaaae-aaara-cai");
       var loginResult = await authClient.isAuthenticated();
@@ -133,7 +143,7 @@ class _MyAppState extends State<MyApp> {
           child: const Icon(Icons.add),
           onPressed: _identity != null
               ? () async {
-                  signup();
+                  getLatestAnnouncements();
                 }
               : () {
                   _showDialog();

@@ -4,7 +4,20 @@ import 'init.dart';
 
 class SignupMethod {
   static const signup = "signup";
+  static const getLatestAnnouncements = "getLatestAnnouncements";
 }
+
+CType Announcement = IDL.Record({
+  'title' : IDL.Text,
+  'updated_at' : IDL.Nat64,
+  'action' : IDL.Text,
+  'announcement_type' : IDL.Text,
+  'content' : IDL.Text,
+  'created_at' : IDL.Nat64,
+  'user_id' : IDL.Nat64,
+  'button_name' : IDL.Text,
+  'announcement_id' : IDL.Nat64,
+});
 
 CType SignupRequest = IDL.Record({
   'company': IDL.Text,
@@ -41,6 +54,7 @@ CType Image = IDL.Record({
 
 final idl = IDL.Service({
   SignupMethod.signup: IDL.Func([SignupRequest], [Profile], []),
+  SignupMethod.getLatestAnnouncements : IDL.Func([], [IDL.Vec(Announcement)], ['query']),
 });
 
 class Signup extends ActorHook {
@@ -62,6 +76,25 @@ class Signup extends ActorHook {
       agent.getAgent().setIdentity(Future.value(identity));
 
       var res = await agent.actor!.getFunc(SignupMethod.signup)!(argumnets);
+
+      if (res != null) {
+        // return (res as BigInt).toInt();
+        return res;
+      }
+      throw "Cannot get count but $res";
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<dynamic> getLatestAnnouncements(
+      SignIdentity identity,
+      List<dynamic> argumnets,
+      ) async {
+    try {
+      agent.getAgent().setIdentity(Future.value(identity));
+
+      var res = await agent.actor!.getFunc(SignupMethod.getLatestAnnouncements)!(argumnets);
 
       if (res != null) {
         // return (res as BigInt).toInt();
