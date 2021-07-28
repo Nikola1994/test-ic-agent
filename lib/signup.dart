@@ -54,27 +54,14 @@ class Signup extends ActorHook {
     actor = _actor;
   }
 
-  Future<dynamic> signup(List<dynamic> argumnets) async {
+  Future<dynamic> signup(
+    SignIdentity identity,
+    List<dynamic> argumnets,
+  ) async {
     try {
-      DelegationIdentity? delegationIdentity;
-      if (signIdentity != null) {
-        try {
-          delegationIdentity = await requestFEDelegation(signIdentity!);
-        } catch (error) {
-          rethrow;
-        }
-      }
+      agent.getAgent().setIdentity(Future.value(identity));
 
-      final newAgent = AgentFactory.create(
-          identity: delegationIdentity,
-          canisterId: agent.canisterId.toText(),
-          idl: agent.idl,
-          url: agent.agentUrl,
-          debug: false);
-
-      var newActor = newAgent.hook(Signup()..agent = newAgent).actor;
-
-      var res = await newActor.getFunc(SignupMethod.signup)!(argumnets);
+      var res = await agent.actor!.getFunc(SignupMethod.signup)!(argumnets);
 
       if (res != null) {
         // return (res as BigInt).toInt();
@@ -84,21 +71,5 @@ class Signup extends ActorHook {
     } catch (e) {
       rethrow;
     }
-  }
-
-  Future<DelegationIdentity> requestFEDelegation(
-    SignIdentity identity,
-  ) async {
-    final sessionKey = Ed25519KeyIdentity.generate(null);
-    const tenMinutesInMsec = 10 * 1000 * 60;
-
-    final chain = await DelegationChain.create(
-      identity,
-      sessionKey.getPublicKey(),
-      DateTime.fromMillisecondsSinceEpoch(DateTime.now().millisecondsSinceEpoch + tenMinutesInMsec),
-      targets: [agent.canisterId],
-    );
-
-    return DelegationIdentity.fromDelegation(sessionKey, chain);
   }
 }

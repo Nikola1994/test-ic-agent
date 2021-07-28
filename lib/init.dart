@@ -4,8 +4,9 @@ class AgentFactory {
   late final Principal _canisterId;
   late Identity _identity;
   late HttpAgent _agent;
+  HttpAgent getAgent() => _agent;
   late final bool _debug;
-  late CanisterActor _actor;
+  CanisterActor? _actor;
   late Service _idl;
   late String _url;
   Identity get identity => _identity;
@@ -13,7 +14,7 @@ class AgentFactory {
   Service get idl => _idl;
   String get agentUrl => _url;
 
-  CanisterActor get actor => _actor;
+  CanisterActor? get actor => _actor;
 
   AgentFactory(
       {required String canisterId,
@@ -26,9 +27,12 @@ class AgentFactory {
     _idl = idl;
     _debug = debug ?? true;
     _url = url;
-    _initAgent(url);
-    _createActor();
   }
+
+  static CanisterActor createActor(ServiceClass idl, HttpAgent agent, Principal canisterId) {
+    return Actor.createActor(idl, ActorConfig.fromMap({"canisterId": canisterId, "agent": agent}));
+  }
+
   factory AgentFactory.create(
       {required String canisterId,
       required String url,
@@ -44,7 +48,7 @@ class AgentFactory {
   }
 
   T hook<T extends ActorHook>(T target) {
-    target.actor = actor;
+    target.actor = actor!;
     return target;
   }
 
@@ -52,7 +56,7 @@ class AgentFactory {
     _canisterId = Principal.fromText(canisterId);
   }
 
-  void _initAgent(String url) async {
+  Future<void> initAgent(String url) async {
     var uri = Uri.parse(url);
     var port = ":${uri.port}";
     var protocol = uri.scheme;
@@ -69,7 +73,7 @@ class AgentFactory {
     _agent.addTransform(HttpAgentRequestTransformFn()..call = makeNonceTransform());
   }
 
-  void _createActor() {
+  void setActor() {
     _actor =
         Actor.createActor(_idl, ActorConfig.fromMap({"canisterId": _canisterId, "agent": _agent}));
   }

@@ -1,6 +1,8 @@
 import 'package:agent_dart/agent/auth.dart';
+import 'package:agent_dart/auth_client/auth_client.dart';
 // import 'package:agent_dart/auth_client/auth_client.dart';
 import 'package:agent_dart/auth_client/webauth_provider.dart';
+import 'package:agent_dart/principal/principal.dart';
 import 'package:agent_dart_example/signup.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -34,13 +36,15 @@ class _MyAppState extends State<MyApp> {
     loading(true);
   }
 
-  void initSignup() {
+  Future<void> initSignup() async {
     var agent = AgentFactory.create(
         canisterId: "a64ux-piaaa-aaaae-aaara-cai",
         url: "https://boundary.ic0.app/", // For Android emulator, please use 10.0.2.2 as endpoint
         idl: idl,
         identity: _identity,
         debug: false);
+    await agent.initAgent("https://boundary.ic0.app/");
+    agent.setActor();
     _signup = agent.hook(Signup()..agent = agent);
   }
 
@@ -51,14 +55,14 @@ class _MyAppState extends State<MyApp> {
   }
 
   void signup() async {
-    initSignup();
+    await initSignup();
     List arguments = [
       {
         'company': "company",
         'education': "Education",
         'display_name': "Display name",
         'title': "Title",
-        'username': "usernametest2",
+        'username': "usernametest11",
         'description': "Description ...",
         'link': "www.google.com",
         'location': "location",
@@ -66,7 +70,7 @@ class _MyAppState extends State<MyApp> {
       }
     ];
     print("Start");
-    dynamic c = await _signup.signup(arguments);
+    dynamic c = await _signup.signup(_identity as SignIdentity, arguments);
     print(c);
     print("End");
     loading(false);
@@ -81,9 +85,7 @@ class _MyAppState extends State<MyApp> {
           authUri: Uri.parse('https://identity.ic0.app/#authorize'),
           useLocalPage: true);
 
-      await authClient.login(
-          // AuthClientLoginOptions()..canisterId = "a64ux-piaaa-aaaae-aaara-cai"
-          );
+      await authClient.login(AuthClientLoginOptions()..canisterId = "a64ux-piaaa-aaaae-aaara-cai");
       var loginResult = await authClient.isAuthenticated();
 
       _identity = authClient.getIdentity();
